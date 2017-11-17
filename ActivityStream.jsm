@@ -39,6 +39,8 @@ const REASON_ADDON_UNINSTALL = 6;
 
 // Configure default Activity Stream prefs with a plain `value` or a `getValue`
 // that computes a value. A `value_local_dev` is used for development defaults.
+// ~~This is the default prefs configuration for Activity Stream, assuming the user
+// ~~ has not explicitly chosen otherwise.
 const PREFS_CONFIG = new Map([
   ["aboutHome.autoFocus", {
     title: "Focus the about:home search box on load",
@@ -218,6 +220,8 @@ const FEEDS_CONFIG = new Map();
 for (const config of FEEDS_DATA) {
   const pref = `feeds.${config.name}`;
   FEEDS_CONFIG.set(pref, config.factory);
+  // ~~ Adding feed-specific prefs here to PREFS_CONFIG, which previously only
+  // ~~ had general Activity Stream prefs.
   PREFS_CONFIG.set(pref, config);
 }
 
@@ -235,6 +239,7 @@ this.ActivityStream = class ActivityStream {
     this.options = options;
     this.store = new Store();
     this.feeds = FEEDS_CONFIG;
+    // ~~ What's the difference between DefaultPrefs, PrefsFeed and DynamicPrefs
     this._defaultPrefs = new DefaultPrefs(PREFS_CONFIG);
   }
   init() {
@@ -275,6 +280,9 @@ this.ActivityStream = class ActivityStream {
       this._defaultPrefs.reset();
     }
   }
+  // ~~ Some prefs will change from default just based on user's locale and 
+  // ~~ location for example.
+  // ~~ Dynamic prefs are those that have a dynamic "getValue" methods
   _updateDynamicPrefs() {
     // Save the geo pref if we have it
     if (Services.prefs.prefHasUserValue(GEO_PREF)) {
@@ -288,6 +296,10 @@ this.ActivityStream = class ActivityStream {
     this.locale = Services.locale.getRequestedLocale();
 
     // Update the pref config of those with dynamic values
+    // ~~ some prefs have a getValue function; for those prefs, we
+    // ~~ need to generate the actual pref value.
+    // ~~ The existence of this method means that pref varies based
+    // ~~ on geolocation or locale
     for (const pref of PREFS_CONFIG.keys()) {
       const prefConfig = PREFS_CONFIG.get(pref);
       if (!prefConfig.getValue) {
@@ -302,6 +314,7 @@ this.ActivityStream = class ActivityStream {
       // If there's an existing value and it has changed, that means we need to
       // overwrite the default with the new value.
       if (prefConfig.value !== undefined && prefConfig.value !== newValue) {
+        // ~~ We store default values always, even if user overrides; so user can reset
         this._defaultPrefs.setDefaultPref(pref, newValue);
       }
 
