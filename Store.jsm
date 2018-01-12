@@ -3,6 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
+// Store stores the central state. You dispatch an action with a little bit
+// of data ("mainTab", data = index of tab). When an action is dispatched 
+// before it goes to a reducer, you can use middleware to for example log the
+// actions being dispatched.
+// Reducer takes the action and data and combines it with the previous state
+// to give a new updated version of that state. Reducers update the state.
+// While this is happening, middleware also sends actions to the feeds.
+// The store is what dispatches the actions.
+// Ex: SnippetsFeed, middleware is used to call init(), uninit() for Snippets feed.
+
 const {utils: Cu} = Components;
 
 const {ActivityStreamMessageChannel} = Cu.import("resource://activity-stream/lib/ActivityStreamMessageChannel.jsm", {});
