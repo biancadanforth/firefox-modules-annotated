@@ -108,6 +108,8 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
         return row;
       });
       return hasMatch ? Object.assign({}, prevState, {rows: newRows}) : prevState;
+      // Places is a DB used for bookmarks and history. In current form, not very 
+      // convenient for synching/searching.
     case at.PLACES_BOOKMARK_ADDED:
       if (!action.data) {
         return prevState;

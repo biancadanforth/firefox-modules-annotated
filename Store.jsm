@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-// Store stores the central state. You dispatch an action with a little bit
+// Store stores the central state. The state (you can see initial state in Reducers.jsm) corresponds to the state of the new tab UI (is topSites shown? How many rows?). It defines the middleware (which calls onAction when an action happens, also handles message passing between chrome and content processes in this case) You dispatch an action with a little bit
 // of data ("mainTab", data = index of tab). When an action is dispatched 
 // before it goes to a reducer, you can use middleware to for example log the
 // actions being dispatched.
@@ -11,6 +11,7 @@
 // to give a new updated version of that state. Reducers update the state.
 // While this is happening, middleware also sends actions to the feeds.
 // The store is what dispatches the actions.
+// Middleware is something between action and reducers; to change things that aren't included in your main logic; more like the practical considerations you have to have. If take away middleware, logic should still work. A common example of middleware in use is for logging.
 // Ex: SnippetsFeed, middleware is used to call init(), uninit() for Snippets feed.
 
 const {utils: Cu} = Components;
